@@ -101,3 +101,13 @@ These are options you can pass as an object to the second argument of `useRove()
 | `loop` | `Boolean` | Determines if the arrow keys can loop around past the ends of the list. Defaults to `false`. |
 | `rtl` | `Boolean` | Determines if the user is expecting to control the focus in a right-to-left language. This will flip the horizontal arrow keys. Defaults to `false` |.
 | `orientation` | `'horizontal'` `'vertical'` `'both'` | Determines which keyboard arrow keys to trigger next focus. Defaults to `'both'` |
+
+### Prior art
+
+The concept of "roving tabindex" is [explained on web.dev by Rob Dodson](https://web.dev/control-focus-with-tabindex/). Some experiences require navigation to be performed by using the arrow keys instead of the tab key.
+
+Much of this package is modeled after features from [`roving-ux-react`](https://www.npmjs.com/package/roving-ux-react) except it was missing some options. The most important is setting the starting item. Many experiences will have a selected item on load which should be the item that receives first focus in some roving scenarios. I've also taken some features embedded within the original hook (like right-to-left support) and allowed them as options as well.
+
+The source code is not a direct copy of the original either. The way the next item to be focused is determined is unique to this implementation. The test suite is nearly identical (except coverage for the new options) and kudos to [Dangoo](https://github.com/Dangoo) for the testing approach of [`roving-ux-react`](https://www.npmjs.com/package/roving-ux-react).
+
+I've also noticed that some other roving tabindex solutions avoided the parent container altogether by listening for `onKeyDown` on each item. I found this to be a good solution so the hook didn't need to control both the parent and the children. Also many solutions could not handle when a dynamic list (such as one found within a search result panel). This hook is also designed to handle this case as well.

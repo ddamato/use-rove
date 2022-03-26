@@ -10,7 +10,12 @@
     "type": "git",
     "url": "git+https://github.com/ddamato/use-rove.git"
   },
-  "keywords": [],
+  "keywords": [
+    "react",
+    "roving",
+    "tabindex",
+    "hook"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
