@@ -84,6 +84,29 @@ describe(useRove.name, function () {
       expect(getByText('second')).toHaveFocus()
     });
 
+    it('should restrict focus by arrow key orientation', function () {
+      const { getByText } = render(<List orientation='horizontal' />)
+
+      expect(document.body).toHaveFocus()
+      userEvent.tab()
+      expect(getByText('first')).toHaveFocus()
+
+      userEvent.keyboard('{arrowUp}')
+      expect(getByText('first')).toHaveFocus()
+
+      userEvent.keyboard('{arrowDown}')
+      expect(getByText('first')).toHaveFocus()
+
+      userEvent.keyboard('{arrowRight}')
+      expect(getByText('second')).toHaveFocus()
+
+      userEvent.keyboard('{arrowDown}')
+      expect(getByText('second')).toHaveFocus()
+
+      userEvent.keyboard('{arrowUp}')
+      expect(getByText('second')).toHaveFocus()
+    });
+
     it('restore focus when returning', function () {
       const { getByText, getByRole } = render(
         <>
