@@ -110,7 +110,7 @@ These are options you can pass as an object to the second argument of `useRove()
 
 ```jsx
 const getTargetProps = useRove(keys, {
-  start: 'my-selected-item', // start at the item with the key 'my-selected-item'.
+  start: 'my-selected-item', // Start at the item with the key 'my-selected-item'.
   loop: true, // Do not stop at the ends when using arrow keys.
   rtl: false, // Use left-to-right navigational pattern.
   orientation: 'horizontal', // Do not listen for up or down arrow keys.
