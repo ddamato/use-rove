@@ -166,6 +166,26 @@ describe(useRove.name, function () {
       expect(getByText('second')).toHaveFocus();
     });
 
+    it('should loop past the ends', function () {
+      const { getByText } = render(<List loop />);
+
+      expect(document.body).toHaveFocus();
+      userEvent.tab();
+      expect(getByText('first')).toHaveFocus();
+
+      userEvent.keyboard('{arrowLeft}');
+      expect(getByText('third')).toHaveFocus();
+
+      userEvent.keyboard('{arrowLeft}');
+      expect(getByText('second')).toHaveFocus();
+
+      userEvent.keyboard('{arrowRight}');
+      expect(getByText('third')).toHaveFocus();
+
+      userEvent.keyboard('{arrowRight}');
+      expect(getByText('first')).toHaveFocus();
+    });
+
     it('should flip horizontally when RTL', function () {
       const { getByText } = render(<List rtl/>);
 

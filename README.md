@@ -6,6 +6,8 @@
   <img src="https://img.shields.io/npm/l/use-rove.svg" alt="License">
 </div>
 
+Customize roving tabindex behavior using a React hook.
+
 ## Install
 
 ```sh

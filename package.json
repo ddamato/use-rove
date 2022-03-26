@@ -1,10 +1,10 @@
 {
   "name": "use-rove",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Customize roving tabindex behavior using a React hook",
+  "main": "src/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
