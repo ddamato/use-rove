@@ -8,13 +8,13 @@ Customize roving tabindex behavior using a React hook.
   <img src="https://img.shields.io/npm/l/use-rove.svg" alt="License">
 </div>
 
-
-
 ## Install
 
 ```sh
 npm i use-rove
 ```
+
+**Important**: This implementation uses new JavaScript features (eg. [Array.at()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/at)). Please ensure your project can support or build process can transpile as required.
 
 ## Usage
 
