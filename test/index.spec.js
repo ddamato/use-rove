@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
-import useRove from '../src';
+import { useRove } from '../src';
 
 function List ({ keys = ['first', 'second', 'third'], ...options }) {
   const getTargetProps = useRove(keys, options);

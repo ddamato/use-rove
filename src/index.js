@@ -16,7 +16,7 @@ const JUMPS = ['End', 'Home'];
  * @param {Object} options - configuration options.
  * @returns {Function} - A function to generate props for each focusable element.
  */
-export default function useRove(keys = [], options) {
+export function useRove(keys = [], options) {
   const { start, loop, rtl, orientation = 'both' } = options || {};
 
   /**
@@ -40,7 +40,7 @@ export default function useRove(keys = [], options) {
 
   /**
    * Provides an array with at least one key.
-   * The resulting usage should destructure the array to returning array for the first item.
+   * The resulting usage should destructure the array for the first item.
    * 
    * @param {String} key - The requested key.
    * @returns {Array<String>} - An array with at least one existing key.
