@@ -125,5 +125,46 @@ describe(useRove.name, function () {
       userEvent.tab()
       expect(clickTarget).toHaveFocus()
     });
+
+    it('should jump to first and last', function () {
+      const { getByText } = render(<List start='second' />)
+
+      expect(document.body).toHaveFocus()
+      userEvent.tab()
+      expect(getByText('second')).toHaveFocus()
+
+      userEvent.keyboard('{end}')
+      expect(getByText('third')).toHaveFocus()
+
+      userEvent.keyboard('{home}')
+      expect(getByText('first')).toHaveFocus()
+
+      userEvent.keyboard('{arrowRight}')
+      expect(getByText('second')).toHaveFocus()
+    });
+
+    it('should flip horizontally when RTL', function () {
+      const { getByText } = render(<List rtl/>);
+
+      // Remember all directions are inverted to reflect RTL behavior
+      expect(document.body).toHaveFocus()
+      userEvent.tab()
+      expect(getByText('first')).toHaveFocus()
+
+      userEvent.keyboard('{arrowRight}')
+      expect(getByText('first')).toHaveFocus()
+
+      userEvent.keyboard('{arrowLeft}')
+      expect(getByText('second')).toHaveFocus()
+
+      userEvent.keyboard('{arrowLeft}')
+      expect(getByText('third')).toHaveFocus()
+
+      userEvent.keyboard('{arrowLeft}')
+      expect(getByText('third')).toHaveFocus()
+
+      userEvent.keyboard('{arrowRight}')
+      expect(getByText('second')).toHaveFocus()
+    });
   });
 });
