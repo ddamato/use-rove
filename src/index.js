@@ -7,7 +7,7 @@ const arrows = {
 
 arrows.both = [...arrows.horizontal, ...arrows.vertical];
 
-export default function useRove(keys, options) {
+export default function useRove(keys = [], options) {
  const { 
     start,
     loop,
@@ -33,19 +33,22 @@ export default function useRove(keys, options) {
   const ref = useRef(null);
 
   useEffect(function reset() {
-    // Reset if the list changes
-    const [update] = ensureKey(init);
-    // this breaks the hook, need to fix
-    // setState({ key: update, focus: false });
-  }, [keys, init]);
+    const [update] = ensureKey(start);
+    setState({ key: update, focus: false });
+  }, [
+    // https://github.com/facebook/react/issues/14476#issuecomment-471199055
+    JSON.stringify(keys),
+    start
+  ]);
 
   useEffect(function manageFocus() {
-    // Manage focus
     if (state.focus && ref?.current) {
-      ref.current.focus();
       setState(s => ({ ...s, focus: false }));
+      ref.current.focus();
     }
-  }, [state.key]);
+  }, [
+    state.key
+  ]);
 
   return function getTargetProps(key) {
     return {
