@@ -23,11 +23,11 @@ import { useRove } from 'use-rove';
 function MyList(props) {
   const { items = [] } = props || {};
   const keys = items.map(item => item.key);
-  const getTargetProps = useRove(keys, options);
+  const getTargetProps = useRove(keys);
   return (
     <ul>
-      { items.map(item =>
-        <li { ...getTargetProps(item.key) } { ...item } />)
+      { items.map({ key, ...item } =>
+        <li { ...getTargetProps(key) } { ...item } />)
       }
     </ul>
   );
@@ -90,7 +90,7 @@ function Item(props) {
   )
 }
 ```
-
+The hook will also handle `Home` and `End` keys; jumping to the beginning and end of the collection respectedly.
 ### Options
 
 These are options you can pass as an object to the second argument of `useRove()`.
@@ -101,6 +101,17 @@ These are options you can pass as an object to the second argument of `useRove()
 | `loop` | `Boolean` | Determines if the arrow keys can loop around past the ends of the list. Defaults to `false`. |
 | `rtl` | `Boolean` | Determines if the user is expecting to control the focus in a right-to-left language. This will flip the horizontal arrow keys. Defaults to `false` |.
 | `orientation` | `'horizontal'` `'vertical'` `'both'` | Determines which keyboard arrow keys to trigger next focus. Defaults to `'both'` |
+
+#### Example
+
+```jsx
+const getTargetProps = useRove(keys, {
+  start: 'my-selected-item', // start at the item with the key 'my-selected-item'.
+  loop: true, // Do not stop at the ends when using arrow keys.
+  rtl: false, // Use left-to-right navigational pattern.
+  orientation: 'horizontal', // Do not listen for up or down arrow keys.
+});
+```
 
 ### Prior art
 
