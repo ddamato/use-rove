@@ -8,7 +8,7 @@ function List ({ keys = ['first', 'second', 'third'], ...options }) {
   const getTargetProps = useRove(keys, options);
   return (
     <ul>
-      { keys.map((k) => <li {...getTargetProps(k)}>{k}</li>) }
+      { keys.map((k, i) => <li {...getTargetProps(k)} aria-label={ `${i}-label` }>{k}</li>) }
     </ul>
   );
 }
@@ -192,6 +192,29 @@ describe(useRove.name, function () {
 
       userEvent.keyboard('{arrowRight}');
       expect(getByText('second')).toHaveFocus();
+    });
+
+    it('should jump on valid keypress', function () {
+      const { getByText } = render(<List start='second' />);
+
+      expect(document.body).toHaveFocus();
+      userEvent.tab();
+      expect(getByText('second')).toHaveFocus();
+
+      userEvent.keyboard('{f}');
+      expect(getByText('first')).toHaveFocus();
+
+      // Does not exist, no change
+      userEvent.keyboard('{v}');
+      expect(getByText('first')).toHaveFocus();
+
+      // aria-label rendered as {index}-label for example
+      userEvent.keyboard('{2}');
+      expect(getByText('third')).toHaveFocus();
+
+      // Does not exist, no change
+      userEvent.keyboard('{7}');
+      expect(getByText('third')).toHaveFocus();
     });
 
     it('should loop past the ends', function () {

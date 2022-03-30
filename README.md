@@ -74,7 +74,8 @@ function Item(props) {
   )
 }
 ```
-The hook will also handle `Home` and `End` keys; jumping to the beginning and end of the collection respectedly.
+- The hook will handle `Home` and `End` keys; jumping to the beginning and end of the collection respectedly.
+- The hook will jump to the child based on the starting character of the text content or `aria-label` of each child.
 ### Options
 
 These are options you can pass as an object to the second argument of `useRove()`.

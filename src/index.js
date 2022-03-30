@@ -65,7 +65,9 @@ export function useRove(keys = [], options) {
    * @returns {String} - The next key to set in state.
    */
   function nextKey(keypress) {
+    if (keypress.length === 1 && /\w/.test(keypress)) return onInput(keypress);
     if (JUMPS.includes(keypress)) return keys.at(JUMPS.indexOf(keypress) - 1);
+    if (!arrows[orientation].includes(keypress)) return state.key;
     const index = keys.indexOf(state.key) + getDirection(keypress);
     if (loop) return keys.at(index) ? keys.at(index) : keys.at(0);
     return keys[index] ? keys[index] : state.key;
@@ -121,6 +123,24 @@ export function useRove(keys = [], options) {
   );
 
   /**
+   * Returns the key that matches the text content or label
+   * 
+   * @param {String} keypress - Alphanumeric keyboard key
+   * @returns {String} - A valid key to focus
+   */
+  function onInput(keypress) {
+    const rgx = new RegExp(`^${keypress}{1}`, 'i')
+    for (const [key, ref] of refs.entries()) {
+      if (
+        rgx.test(ref?.current?.textContent) ||
+        rgx.test(ref?.current.getAttribute('aria-label'))
+        )
+      return key;
+    }
+    return state.key;
+  }
+
+  /**
    * This function provides the props to each element expected to be focusable by key
    * @param {String|Object} identifier - The key that represents this element or the props for the element.
    * @returns {Object} - Props to represent the state of focus for each key.
@@ -160,8 +180,8 @@ export function useRove(keys = [], options) {
       onKeyDown: (ev) => {
         if (typeof onKeyDown === 'function') onKeyDown(ev);
 
-        // Do nothing if the key is not expected.
-        if (!arrows[orientation].concat(JUMPS).includes(ev.key)) return;
+        // Skip this key
+        if (ev.key === 'Tab') return;
 
         // Prevent default behavior.
         ev.preventDefault();
