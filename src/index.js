@@ -132,8 +132,8 @@ export function useRove(keys = [], options) {
     const rgx = new RegExp(`^${keypress}{1}`, 'i')
     for (const [key, ref] of refs.entries()) {
       if (
-        rgx.test(ref?.current?.textContent) ||
-        rgx.test(ref?.current.getAttribute('aria-label'))
+        rgx.test(ref.current.textContent) ||
+        rgx.test(ref.current.getAttribute('aria-label'))
         )
       return key;
     }
