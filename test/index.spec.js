@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { render } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
@@ -10,6 +10,34 @@ function List ({ keys = ['first', 'second', 'third'], ...options }) {
     <ul>
       { keys.map((k) => <li {...getTargetProps(k)}>{k}</li>) }
     </ul>
+  );
+}
+
+function ButtonProps ({ keys = ['first', 'second', 'third'], ...options }) {
+  const [value, setValue] = useState('');
+  const getTargetProps = useRove(keys, options);
+  const onClick = ({ target }) => setValue(target.value);
+  return (
+   <>
+     <div>
+      { keys.map((k) => <button {...getTargetProps({ key: k, onClick, value: k })}>{k}</button>) }
+     </div>
+     <span data-testid='status'>{ value }</span>
+   </>
+  );
+}
+
+function MissingKey ({ keys = ['first', 'second', 'third'], ...options }) {
+  const [value, setValue] = useState('');
+  const getTargetProps = useRove(keys, options);
+  const onClick = ({ target }) => setValue(target.value);
+  return (
+   <>
+     <div>
+      { keys.map((k) => <button {...getTargetProps({ onClick, value: k })} key={ k }>{k}</button>) }
+     </div>
+     <span data-testid='status'>{ value }</span>
+   </>
   );
 }
 
@@ -135,7 +163,7 @@ describe(useRove.name, function () {
     it('should focus by click/tap', function () {
       const { getByText } = render(<List />);
 
-      const clickTarget = getByText('second')
+      const clickTarget = getByText('second');
 
       expect(document.body).toHaveFocus();
       userEvent.tab();
@@ -210,4 +238,37 @@ describe(useRove.name, function () {
       expect(getByText('second')).toHaveFocus();
     });
   });
+
+  describe('alternative behavior', function() {
+    it('should merge props', function () {
+      const { getByTestId, getByText } = render(<ButtonProps />);
+
+      const clickTarget = getByText('second');
+      const status = getByTestId('status');
+
+      expect(status).toHaveTextContent('');
+
+      expect(document.body).toHaveFocus();
+      userEvent.tab();
+      expect(getByText('first')).toHaveFocus();
+
+      userEvent.click(clickTarget);
+      expect(clickTarget).toHaveFocus();
+
+      expect(status).toHaveTextContent('second');
+    });
+
+    it('should return given props when key is missing', function () {
+      const { getByTestId, getByText } = render(<MissingKey />);
+
+      const clickTarget = getByText('second');
+      const status = getByTestId('status');
+
+      userEvent.click(clickTarget);
+      expect(clickTarget).toHaveFocus();
+
+      expect(status).toHaveTextContent('second');
+
+    });
+  })
 });

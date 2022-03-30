@@ -63,34 +63,14 @@ const {
 } = getTargetProps(key);
 ```
 
-If you also need to listen to an event, be sure to call the resulting listener in your callback as well.
+You can also provide the component props into the argument instead as long as the `key` prop is included. The props used within the hook will be merged with the ones incoming. In other words, event listeners will fire and refs will be set. The only prop that will not be honored is `tabIndex` since this hook needs to control this.
 
 ```jsx
 function Item(props) {
-  // Props for the resulting component.
-  const {
-    key,
-    onClick: propsClick,
-    ...rest,
-  } = props;
-
-  // Props to handle roving tabindex.
-  const { 
-    onClick: targetClick,
-    ...targetProps
-  } = getTargetProps(key);
-
-  // Combine event handlers.
-  const onClick = ev => {
-    targetClick(ev);
-    propsClick(ev);
-  };
+  // props.key will need to exist here otherwise the return will just be the given props.
 
   return (
-    <li
-      { ...rest }
-      { ...targetProps }
-      onClick={ onClick }/>
+    <li { ...getTargetProps(props) }/>
   )
 }
 ```
@@ -115,42 +95,6 @@ const getTargetProps = useRove(keys, {
   rtl: false, // Use left-to-right navigational pattern.
   orientation: 'horizontal', // Do not listen for up or down arrow keys.
 });
-```
-
-### Test
-
-```sh
-npm t
-```
-
-```sh
- PASS  test/index.spec.js
-  useRove
-    ✓ should return defined function (28 ms)
-    rendering
-      ✓ should default to first key (70 ms)
-      ✓ should default to starting key (14 ms)
-    interactions
-      ✓ should set focus by horizontal arrow keys (32 ms)
-      ✓ should set focus by vertical arrow keys (23 ms)
-      ✓ should restrict focus by arrow key orientation (20 ms)
-      ✓ restore focus when returning (45 ms)
-      ✓ should focus by click/tap (26 ms)
-      ✓ should jump to first and last (19 ms)
-      ✓ should loop past the ends (20 ms)
-      ✓ should flip horizontally when RTL (20 ms)
-
-----------|---------|----------|---------|---------|-------------------
-File      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
-----------|---------|----------|---------|---------|-------------------
-All files |     100 |      100 |     100 |     100 |                   
- index.js |     100 |      100 |     100 |     100 |                   
-----------|---------|----------|---------|---------|-------------------
-Test Suites: 1 passed, 1 total
-Tests:       11 passed, 11 total
-Snapshots:   0 total
-Time:        1.677 s, estimated 2 s
-Ran all test suites.
 ```
 
 ### Prior art

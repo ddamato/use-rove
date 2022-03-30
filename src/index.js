@@ -80,7 +80,7 @@ export function useRove(keys = [], options) {
   const [state, setState] = useState({ key: init, focus: false });
 
   // Prepare a reference to the state.key element.
-  const ref = useRef(null);
+  const focusRef = useRef(null);
 
   /**
    * If the list of keys changes or the starting key
@@ -105,9 +105,11 @@ export function useRove(keys = [], options) {
     ]
   );
 
+  // Collection of refs for each child
+  const refs = new Map();
+
   /**
-   * We hold a reference to the ref purely for focusing the element.
-   * The ref is expected to represent the element at the state.key as it changes.
+   * We hold a reference for focusing the element.
    * We'll also need to reset the focus trigger here so focus doesn't occur
    * if the component re-renders.
    * 
@@ -115,9 +117,9 @@ export function useRove(keys = [], options) {
    */
   useEffect(
     function manageFocus() {
-      if (state.focus && ref?.current) {
+      if (state.focus) {
         setState((s) => ({ ...s, focus: false }));
-        ref.current.focus();
+        refs.get(state.key).current.focus();
       }
     },
     [state.key]
@@ -125,26 +127,47 @@ export function useRove(keys = [], options) {
 
   /**
    * This function provides the props to each element expected to be focusable by key
-   * @param {String} key - The key that represents this element.
+   * @param {String|Object} identifier - The key that represents this element or the props for the element.
    * @returns {Object} - Props to represent the state of focus for each key.
    */
-  return function getTargetProps(key) {
-    return {
-
-      // The unique key.
+  return function getTargetProps(identifier) {
+    
+    const {
       key,
+      ref = useRef(null),
+      tabIndex, // Drop this, needs to be controlled by the hook
+      onClick = Function.prototype,
+      onKeyDown = Function.prototype,
+      ...rest
+    } = typeof identifier === 'string'
+      ? { key: identifier }
+      : identifier;
 
-      // The element reference, used to call ref.current.focus().
-      ref: state.key === key ? ref : null,
+    if (!key) return identifier;
 
-      // The tabIndex, only as 0 for the state.key element.
-      tabIndex: state.key === key ? 0 : -1,
+    refs.set(key, ref);
 
-      // Event handler for click/tap of the element.
-      onClick: () => setState({ key, focus: true }),
+    const props = {
+       // The unique key.
+       key,
 
-      // Event handler for keyboard navigation.
-      onKeyDown: (ev) => {
+       // The element reference, used to call focusRef.current.focus().
+       ref,
+ 
+       // The tabIndex, only as 0 for the state.key element.
+       tabIndex: state.key === key ? 0 : -1,
+ 
+       // Event handler for click/tap of the element.
+       onClick: (ev) => {
+        if (typeof onClick === 'function') onClick(ev);
+
+        setState({ key, focus: true });
+       },
+ 
+       // Event handler for keyboard navigation.
+       onKeyDown: (ev) => {
+        if (typeof onKeyDown === 'function') onKeyDown(ev);
+
         // Do nothing if the key is not expected.
         if (!arrows[orientation].concat(JUMPS).includes(ev.key)) return;
 
@@ -153,8 +176,13 @@ export function useRove(keys = [], options) {
 
         // Set the next key based on keyboard navigation and focus.
         setState({ key: nextKey(ev.key), focus: true });
-      },
 
-    };
+       },
+
+       // Spread the rest of the props
+       ...rest
+    }
+
+    return props;
   };
 }
