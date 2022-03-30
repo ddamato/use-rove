@@ -11,7 +11,7 @@ const JUMPS = ['End', 'Home'];
 
 /**
  * The useRove hook.
- * 
+ *
  * @param {Array<String>} keys - An array of unique keys in order of appearance.
  * @param {Object} options - configuration options.
  * @returns {Function} - A function to generate props for each focusable element.
@@ -26,9 +26,7 @@ export function useRove(keys = [], options) {
    */
   const arrows = useMemo(
     function setArrows() {
-      const horizontal = rtl
-        ? ARROWS.horizontal.reverse()
-        : ARROWS.horizontal;
+      const horizontal = rtl ? ARROWS.horizontal.reverse() : ARROWS.horizontal;
       return {
         horizontal,
         vertical: ARROWS.vertical,
@@ -41,7 +39,7 @@ export function useRove(keys = [], options) {
   /**
    * Provides an array with at least one key.
    * The resulting usage should destructure the array for the first item.
-   * 
+   *
    * @param {String} key - The requested key.
    * @returns {Array<String>} - An array with at least one existing key.
    */
@@ -52,7 +50,7 @@ export function useRove(keys = [], options) {
   /**
    * Determines the direction that the keys index needs to shift based on
    * a given arrow key press.
-   * 
+   *
    * @param {String} keypress - A keyboard key representation as a string.
    * @returns {Number} - The amount to increment the current index in the keys array.
    */
@@ -62,7 +60,7 @@ export function useRove(keys = [], options) {
 
   /**
    * Determines the next key to be set in state by keyboard interaction.
-   * 
+   *
    * @param {String} keypress - A keyboard key representation as a string.
    * @returns {String} - The next key to set in state.
    */
@@ -78,9 +76,6 @@ export function useRove(keys = [], options) {
 
   // Set the initial state of the hook.
   const [state, setState] = useState({ key: init, focus: false });
-
-  // Prepare a reference to the state.key element.
-  const focusRef = useRef(null);
 
   /**
    * If the list of keys changes or the starting key
@@ -112,7 +107,7 @@ export function useRove(keys = [], options) {
    * We hold a reference for focusing the element.
    * We'll also need to reset the focus trigger here so focus doesn't occur
    * if the component re-renders.
-   * 
+   *
    * This should only fire if the state.key changes. This function does not change the state.key itself.
    */
   useEffect(
@@ -131,7 +126,6 @@ export function useRove(keys = [], options) {
    * @returns {Object} - Props to represent the state of focus for each key.
    */
   return function getTargetProps(identifier) {
-    
     const {
       key,
       ref = useRef(null),
@@ -139,33 +133,31 @@ export function useRove(keys = [], options) {
       onClick = Function.prototype,
       onKeyDown = Function.prototype,
       ...rest
-    } = typeof identifier === 'string'
-      ? { key: identifier }
-      : identifier;
+    } = typeof identifier === 'string' ? { key: identifier } : identifier;
 
     if (!key) return identifier;
 
     refs.set(key, ref);
 
     const props = {
-       // The unique key.
-       key,
+      // The unique key.
+      key,
 
-       // The element reference, used to call focusRef.current.focus().
-       ref,
- 
-       // The tabIndex, only as 0 for the state.key element.
-       tabIndex: state.key === key ? 0 : -1,
- 
-       // Event handler for click/tap of the element.
-       onClick: (ev) => {
+      // The element reference, used to call focusRef.current.focus().
+      ref,
+
+      // The tabIndex, only as 0 for the state.key element.
+      tabIndex: state.key === key ? 0 : -1,
+
+      // Event handler for click/tap of the element.
+      onClick: (ev) => {
         if (typeof onClick === 'function') onClick(ev);
 
         setState({ key, focus: true });
-       },
- 
-       // Event handler for keyboard navigation.
-       onKeyDown: (ev) => {
+      },
+
+      // Event handler for keyboard navigation.
+      onKeyDown: (ev) => {
         if (typeof onKeyDown === 'function') onKeyDown(ev);
 
         // Do nothing if the key is not expected.
@@ -176,12 +168,11 @@ export function useRove(keys = [], options) {
 
         // Set the next key based on keyboard navigation and focus.
         setState({ key: nextKey(ev.key), focus: true });
+      },
 
-       },
-
-       // Spread the rest of the props
-       ...rest
-    }
+      // Spread the rest of the props
+      ...rest,
+    };
 
     return props;
   };
