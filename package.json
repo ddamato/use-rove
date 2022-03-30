@@ -1,6 +1,6 @@
 {
   "name": "use-rove",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Customize roving tabindex behavior using a React hook",
   "main": "src/index.js",
   "scripts": {
