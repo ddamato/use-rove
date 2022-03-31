@@ -26,7 +26,7 @@ export function useRove(keys = [], options) {
    */
   const arrows = useMemo(
     function setArrows() {
-      const horizontal = rtl ? ARROWS.horizontal.reverse() : ARROWS.horizontal;
+      const horizontal = rtl ? [...ARROWS.horizontal].reverse() : ARROWS.horizontal;
       return {
         horizontal,
         vertical: ARROWS.vertical,
@@ -155,7 +155,7 @@ export function useRove(keys = [], options) {
       ...rest
     } = typeof identifier === 'string' ? { key: identifier } : identifier;
 
-    if (!key) return identifier;
+    if (!(key && keys.includes(key))) return identifier;
 
     refs.set(key, ref);
 

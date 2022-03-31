@@ -7,9 +7,9 @@ import { useRove } from '../src';
 function List ({ keys = ['first', 'second', 'third'], ...options }) {
   const getTargetProps = useRove(keys, options);
   return (
-    <ul>
-      { keys.map((k, i) => <li {...getTargetProps(k)} aria-label={ `${i}-label` }>{k}</li>) }
-    </ul>
+    <div>
+      { keys.map((k, i) => <button {...getTargetProps(k)} aria-label={ `${i}-label` }>{k}</button>) }
+    </div>
   );
 }
 
@@ -38,6 +38,15 @@ function MissingKey ({ keys = ['first', 'second', 'third'], ...options }) {
      </div>
      <span data-testid='status'>{ value }</span>
    </>
+  );
+}
+
+function IgnoreSecond ({ keys = ['first', 'second', 'third'], ...options }) {
+  const getTargetProps = useRove(keys.filter((k) => k !== 'second'), options);
+  return (
+    <div>
+      { keys.map((k) => <button {...getTargetProps({ key: k })}>{k}</button>) }
+    </div>
   );
 }
 
@@ -139,7 +148,7 @@ describe(useRove.name, function () {
       const { getByText, getByRole } = render(
         <>
           <List/>
-          <button type="button">Button</button>
+          <a href="#">Link</a>
         </>
       );
 
@@ -151,7 +160,7 @@ describe(useRove.name, function () {
       expect(getByText('second')).toHaveFocus();
 
       userEvent.tab();
-      expect(getByRole('button')).toHaveFocus();
+      expect(getByRole('link')).toHaveFocus();
 
       userEvent.tab({ shift: true })
       expect(getByText('second')).toHaveFocus();
@@ -292,6 +301,20 @@ describe(useRove.name, function () {
 
       expect(status).toHaveTextContent('second');
 
+    });
+
+    it('ignore items that are not provided', function () {
+      const { getByText } = render(<IgnoreSecond />);
+
+      expect(document.body).toHaveFocus();
+      userEvent.tab();
+      expect(getByText('first')).toHaveFocus();
+
+      userEvent.keyboard('{arrowRight}');
+      expect(getByText('third')).toHaveFocus();
+
+      userEvent.keyboard('{arrowLeft}');
+      expect(getByText('first')).toHaveFocus();
     });
   })
 });

@@ -63,6 +63,8 @@ const {
 } = getTargetProps(key);
 ```
 
+#### Merging props
+
 You can also provide the component props into the argument instead as long as the `key` prop is included. The props used within the hook will be merged with the ones incoming. In other words, event listeners will fire and refs will be set. The only prop that will not be honored is `tabIndex` since this hook needs to control this.
 
 ```jsx
@@ -76,6 +78,26 @@ function Item(props) {
 ```
 - The hook will handle `Home` and `End` keys; jumping to the beginning and end of the collection respectedly.
 - The hook will jump to the child based on the starting character of the text content or `aria-label` of each child.
+
+#### `disabled` items
+
+Use the following pattern to handle disabled items.
+
+```jsx
+function Listbox(props) {
+  // Assume items is an array of props to build buttons, each with a unique key.
+  const { items } = props;
+  // Filter the list of items, looking for non-disabled keys.
+  const activeKeys = items.filter(({ disabled }) => !disabled).map(({ key }) => key);
+  // Setup the hook.
+  const getTargetProps = useRove(activeKeys);
+  // Render items.
+  return items.map(item => <button { ...( item.disabled ? { tabIndex: -1, ...item } : getTargetProps(item) ) }/> );
+}
+```
+
+The hook does not check if an item is disabled when setting the next item. It is merely selecting the next key in the given list of keys from the initial setup. Setting an item as disabled is fundamentally changing the state of the available items and will require a new list.
+
 ### Options
 
 These are options you can pass as an object to the second argument of `useRove()`.
