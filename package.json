@@ -22,8 +22,8 @@
     "url": "https://github.com/ddamato/use-rove/issues"
   },
   "homepage": "https://github.com/ddamato/use-rove#readme",
-  "dependencies": {
-    "react": "^17.0.2"
+  "peerDependencies": {
+    "react": ">=16.9.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.11",
@@ -33,6 +33,7 @@
     "@testing-library/react-hooks": "^7.0.2",
     "@testing-library/user-event": "^13.5.0",
     "babel-jest": "^27.5.1",
-    "jest": "^27.5.1"
+    "jest": "^27.5.1",
+    "react": "^16.9.0"
   }
 }
