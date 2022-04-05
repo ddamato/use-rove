@@ -2,8 +2,11 @@
   "name": "use-rove",
   "version": "1.2.1",
   "description": "Customize roving tabindex behavior using a React hook",
-  "main": "src/index.js",
+  "source": "src/index.js",
+  "main": "dist/main.js",
+  "module": "dist/module.js",
   "scripts": {
+    "build": "parcel build",
     "test": "jest --coverage"
   },
   "repository": {
@@ -26,14 +29,15 @@
     "react": ">=16.9.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.16.11",
     "@babel/preset-react": "^7.16.7",
+    "@parcel/babel-preset-env": "^2.4.1",
     "@testing-library/jest-dom": "^5.16.3",
     "@testing-library/react": "^12.1.4",
     "@testing-library/react-hooks": "^7.0.2",
     "@testing-library/user-event": "^13.5.0",
     "babel-jest": "^27.5.1",
     "jest": "^27.5.1",
+    "parcel": "^2.4.1",
     "react": "^16.9.0"
   }
 }
