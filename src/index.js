@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { createRef, useEffect, useMemo, useState } from 'react';
 
 // Possible arrow keys for navigation.
 const ARROWS = {
@@ -19,6 +19,15 @@ const JUMPS = ['End', 'Home'];
 export function useRove(keys = [], options) {
   const { start, loop, rtl, orientation = 'both' } = options || {};
 
+   // Collection of refs for each child
+   const refs = new Map();
+
+  // Ensure the given key exists.
+  const [init] = ensureKey(start);
+
+  // Set the initial state of the hook.
+  const [state, setState] = useState({ key: init, focus: false });
+
   /**
    * This creates the configuration of arrow key usage based on RTL.
    * The order of the keys in each array is important as we determine which direction to go
@@ -34,6 +43,46 @@ export function useRove(keys = [], options) {
       };
     },
     [rtl]
+  );
+
+  /**
+   * If the list of keys changes or the starting key
+   * the entire setup will need to be reset.
+   */
+   useEffect(
+    function reset() {
+      const [update] = ensureKey(start);
+      setState({ key: update, focus: false });
+    },
+    [
+      /**
+       * Checking if the values of an array change as a dependency.
+       * Since the dependency is an array, equality is not easy as an array.
+       * ['a'] === ['a'] -> false
+       * However, since keys is a shallow array of strings, this approach is fine.
+       * JSON.stringify(['a']) === JSON.stringify(['a']) -> true
+       */
+      // https://github.com/facebook/react/issues/14476#issuecomment-471199055
+      JSON.stringify(keys),
+      start,
+    ]
+  );
+
+  /**
+   * We hold a reference for focusing the element.
+   * We'll also need to reset the focus trigger here so focus doesn't occur
+   * if the component re-renders.
+   *
+   * This should only fire if the state.key changes. This function does not change the state.key itself.
+   */
+   useEffect(
+    function manageFocus() {
+      if (state.focus) {
+        setState((s) => ({ ...s, focus: false }));
+        refs.get(state.key).current.focus();
+      }
+    },
+    [state.key]
   );
 
   /**
@@ -73,55 +122,6 @@ export function useRove(keys = [], options) {
     return keys[index] ? keys[index] : state.key;
   }
 
-  // Ensure the given key exists.
-  const [init] = ensureKey(start);
-
-  // Set the initial state of the hook.
-  const [state, setState] = useState({ key: init, focus: false });
-
-  /**
-   * If the list of keys changes or the starting key
-   * the entire setup will need to be reset.
-   */
-  useEffect(
-    function reset() {
-      const [update] = ensureKey(start);
-      setState({ key: update, focus: false });
-    },
-    [
-      /**
-       * Checking if the values of an array change as a dependency.
-       * Since the dependency is an array, equality is not easy as an array.
-       * ['a'] === ['a'] -> false
-       * However, since keys is a shallow array of strings, this approach is fine.
-       * JSON.stringify(['a']) === JSON.stringify(['a']) -> true
-       */
-      // https://github.com/facebook/react/issues/14476#issuecomment-471199055
-      JSON.stringify(keys),
-      start,
-    ]
-  );
-
-  // Collection of refs for each child
-  const refs = new Map();
-
-  /**
-   * We hold a reference for focusing the element.
-   * We'll also need to reset the focus trigger here so focus doesn't occur
-   * if the component re-renders.
-   *
-   * This should only fire if the state.key changes. This function does not change the state.key itself.
-   */
-  useEffect(
-    function manageFocus() {
-      if (state.focus) {
-        setState((s) => ({ ...s, focus: false }));
-        refs.get(state.key).current.focus();
-      }
-    },
-    [state.key]
-  );
-
   /**
    * Returns the key that matches the text content or label
    * 
@@ -148,7 +148,7 @@ export function useRove(keys = [], options) {
   return function getTargetProps(identifier) {
     const {
       key,
-      ref = useRef(null),
+      ref = createRef(null),
       tabIndex, // Drop this, needs to be controlled by the hook
       onClick = Function.prototype,
       onKeyDown = Function.prototype,
