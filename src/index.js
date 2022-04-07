@@ -79,7 +79,7 @@ export function useRove(keys = [], options) {
     function manageFocus() {
       if (state.focus) {
         setState((s) => ({ ...s, focus: false }));
-        refs.get(state.key).current.focus();
+        refs.get(state.key)?.current?.focus();
       }
     },
     [state.key]
@@ -132,8 +132,8 @@ export function useRove(keys = [], options) {
     const rgx = new RegExp(`^${keypress}{1}`, 'i')
     for (const [key, ref] of refs.entries()) {
       if (
-        rgx.test(ref.current.textContent) ||
-        rgx.test(ref.current.getAttribute('aria-label'))
+        rgx.test(ref?.current?.textContent) ||
+        rgx.test(ref?.current?.getAttribute('aria-label'))
         )
       return key;
     }
