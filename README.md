@@ -141,3 +141,43 @@ Much of this package is modeled after features from [`roving-ux-react`](https://
 The source code is not a direct copy of the original. As one example, the way the next item to be focused is determined is unique to this implementation. However, the test suite is nearly identical (except coverage for the new options) and kudos to [Dangoo](https://github.com/Dangoo) for the testing approach of [`roving-ux-react`](https://www.npmjs.com/package/roving-ux-react).
 
 I've also noticed that some other roving tabindex solutions avoided the parent container altogether by listening for `onKeyDown` on each item. I found this to be a good solution so the hook didn't need to control both the parent and the children. Also many solutions could not handle roving tabindex with a dynamic list (such as one found within a search result panel). This hook is also designed to handle this case as well.
+
+One of the missing pieces you might question is the ability to know which element of the list is active; specifically for the purpose of [`aria-activedescendant`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-activedescendant). [Research shows](https://zellwk.com/blog/element-focus-vs-aria-activedescendant/) that the `element.focus` and roving `tabIndex` approach to be better supported than wiring in `aria-activedescendant`. Ultimately, the author of the application should know what is active by listening for click or keydown on the item and updating an author-controlled state.
+
+```jsx
+import React, { useState } from 'react';
+import { useRove } from 'use-rove';
+
+function MyList(props) {
+  const { items = [] } = props || {};
+  const keys = items.map(item => item.key);
+  const [activeId, setActiveId] = useState(items[0].id);
+  const getTargetProps = useRove(keys, { start: keys[0] });
+
+  return (
+    <ul aria-activedescendant={ activeId }>
+      { items.map({ key, id, ...item } => {
+        const { onClick, onKeyDown, ...getTargetPropsRest } = getTargetProps(key);
+        return (
+          <li
+            { ...item }
+            { ...getTargetPropsRest }
+            id={ id }
+            onClick={ () => {
+              onClick(ev);
+              setActiveId(id);
+            } }
+            onKeyDown={ (ev) => {
+              onKeyDown(ev); // Make sure this is called first
+              if (!['Enter', 'Space'].includes(ev.key)) return;
+              setActiveId(id);
+            } }/>
+        );
+      })
+      }
+    </ul>
+  );
+}
+```
+
+Above example keeps track of what the user selects, assuming nothing is set as disabled. The purpose of this project is merely to handle the roving tabindex functionality; not to determine the user selected item after these events.
