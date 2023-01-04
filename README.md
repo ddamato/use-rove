@@ -14,8 +14,6 @@ Customize roving tabindex behavior using a React hook.
 npm i use-rove
 ```
 
-**Important**: This implementation uses new JavaScript features (eg. [Array.at()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/at)). Please ensure your project can support or build process can transpile as required.
-
 ## Usage
 
 Assuming `items` is an array of objects (`props`) where each `item` has a unique `key` property.
@@ -98,6 +96,18 @@ function Listbox(props) {
 
 The hook does not check if an item is disabled when setting the next item. It is merely selecting the next key in the given list of keys from the initial setup. Setting an item as disabled is fundamentally changing the state of the available items and will require a new list.
 
+#### "visual" focus
+
+In some cases, you might not want to move the DOM focus when traversing the children. Setting `focus: false` will avoid shifting the DOM focus. However, the `tabIndex` attribute will still cycle accordingly so you may target the element with a focused style.
+
+```css
+ul [tabindex=0] {
+  /* https://css-tricks.com/copy-the-browsers-native-focus-styles/ */
+  outline: 5px auto Highlight;
+  outline: 5px auto -webkit-focus-ring-color;
+}
+```
+
 ### Options
 
 These are options you can pass as an object to the second argument of `useRove()`.
@@ -108,6 +118,7 @@ These are options you can pass as an object to the second argument of `useRove()
 | `loop` | `Boolean` | Determines if the arrow keys can loop around past the ends of the list. Defaults to `false`. |
 | `rtl` | `Boolean` | Determines if the user is expecting to control the focus in a right-to-left language. This will flip the horizontal arrow keys. Defaults to `false` |.
 | `orientation` | `'horizontal'` `'vertical'` `'both'` | Determines which keyboard arrow keys to trigger next focus. Defaults to `'both'` |
+| `focus` | `Boolean` | Calls `.focus()` on the DOM element ref. Defaults to `true` |
 
 #### Example
 
@@ -117,6 +128,7 @@ const getTargetProps = useRove(keys, {
   loop: true, // Do not stop at the ends when using arrow keys.
   rtl: false, // Use left-to-right navigational pattern.
   orientation: 'horizontal', // Do not listen for up or down arrow keys.
+  focus: false, // Will not call `.focus()`, useful for showing a visual appearance of focus.
 });
 ```
 

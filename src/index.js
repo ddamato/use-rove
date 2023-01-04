@@ -17,7 +17,7 @@ const JUMPS = ['End', 'Home'];
  * @returns {Function} - A function to generate props for each focusable element.
  */
 export function useRove(keys = [], options) {
-  const { start, loop, rtl, orientation = 'both' } = options || {};
+  const { start, loop, rtl, orientation = 'both', focus = true } = options || {};
 
    // Collection of refs for each child
    const refs = new Map();
@@ -77,7 +77,7 @@ export function useRove(keys = [], options) {
    */
    useEffect(
     function manageFocus() {
-      if (state.focus) {
+      if (focus && state.focus) {
         setState((s) => ({ ...s, focus: false }));
         refs.get(state.key)?.current?.focus();
       }

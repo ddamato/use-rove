@@ -316,5 +316,20 @@ describe(useRove.name, function () {
       userEvent.keyboard('{arrowLeft}');
       expect(getByText('first')).toHaveFocus();
     });
+
+    it('should not call DOM focus but shift tabindex', function () {
+      const { getByText } = render(<List focus={ false } />);
+
+      expect(document.body).toHaveFocus();
+      userEvent.tab();
+      expect(getByText('first')).toHaveFocus();
+      expect(getByText('first')).toHaveAttribute('tabindex', '0');
+
+      userEvent.keyboard('{arrowRight}');
+      expect(getByText('first')).toHaveFocus();
+      expect(getByText('first')).toHaveAttribute('tabindex', '-1');
+      expect(getByText('second')).toHaveAttribute('tabindex', '0');
+
+    });
   })
 });
