@@ -101,7 +101,7 @@ The hook does not check if an item is disabled when setting the next item. It is
 In some cases, you might not want to move the DOM focus when traversing the children. Setting `focus: false` will avoid shifting the DOM focus. However, the `tabIndex` attribute will still cycle accordingly so you may target the element with a focused style.
 
 ```css
-ul [tabindex=0] {
+ul [tabindex="0"] {
   /* https://css-tricks.com/copy-the-browsers-native-focus-styles/ */
   outline: 5px auto Highlight;
   outline: 5px auto -webkit-focus-ring-color;
@@ -157,21 +157,16 @@ function MyList(props) {
   return (
     <ul aria-activedescendant={ activeId }>
       { items.map({ key, id, ...item } => {
-        const { onClick, onKeyDown, ...getTargetPropsRest } = getTargetProps(key);
+        const targetProps = getTargetProps({
+          key,
+          onClick: () => setActiveId(id),
+          onKeyDown: (ev) => ['Enter', 'Space'].includes(ev.key) && setActiveId(id),
+        });
         return (
           <li
             { ...item }
-            { ...getTargetPropsRest }
-            id={ id }
-            onClick={ () => {
-              onClick(ev);
-              setActiveId(id);
-            } }
-            onKeyDown={ (ev) => {
-              onKeyDown(ev); // Make sure this is called first
-              if (!['Enter', 'Space'].includes(ev.key)) return;
-              setActiveId(id);
-            } }/>
+            { ...targetProps }
+            id={ id }/>
         );
       })
       }
